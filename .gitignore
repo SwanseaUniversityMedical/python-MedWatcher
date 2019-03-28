@@ -121,3 +121,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+tempCodeRunnerFile.py
+in
+input
+output
+.vscode
