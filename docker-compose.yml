@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  service.python:
-    image: watch
+  service.medwatcher:
+    image: swanseauniversity/medwatcher
     environment:
       - INPUT_DIR=./input
       - OUTPUT_DIR=./output
