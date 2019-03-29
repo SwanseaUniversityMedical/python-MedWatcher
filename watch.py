@@ -8,16 +8,10 @@ from watchgod.watcher import Change, PythonWatcher
 
 logger = logging.getLogger('watch')
 
-os.environ['INPUT_DIR'] = './input'
-os.environ['OUTPUT_DIR'] = './output'
-os.environ['WATCH_PATTERN'] = 'medgate_entrypoint.py'
-
-
-if __name__ == '__main__':
-    main()
-
 
 def main():
+    setEnv()
+
     for changes in watch('./in', watcher_cls=PythonWatcher):
         # if(list(changes)[0][0] == Change.add):
         if list(changes)[0][0] == Change.modified:
@@ -36,15 +30,24 @@ def main():
                 if runCommand(pipCmd):
                     pyVersion = '' if pyVersion == 2 else 3
                     pyCmd = 'python{} {}'.format(pyVersion, entrypoint)
-                    runCommand(pyCmd)
+                    if runCommand(pyCmd):
+                        done(appName, 'done')
+                else:
+                    done(appName, 'error')
             else:
+                done(appName, 'error')
                 logger.error('missing requirements for {}'.format(appName))
+
+
+def done(name, type):
+    f = open("./out/{}-{}".format(name, type), "w+")
+    f.close()
 
 
 def readConfig(path):
     with open(path) as json_file:
         data = json.load(json_file)
-        return data['Env_version'][0], data['Name']
+        return str(data['Env_version'])[0], data['Name']
 
 
 def runCommand(cmd):
@@ -55,3 +58,18 @@ def runCommand(cmd):
     else:
         logger.error(result.stderr)
         return False
+
+
+def setEnv():
+    if os.environ.get('INPUT_DIR') is None:
+        os.environ['INPUT_DIR'] = './input'
+
+    if os.environ.get('OUTPUT_DIR') is None:
+        os.environ['OUTPUT_DIR'] = './output'
+
+    if os.environ.get('WATCH_PATTERN') is None:
+        os.environ['WATCH_PATTERN'] = 'medgate_entrypoint.py'
+
+
+if __name__ == '__main__':
+    main()
