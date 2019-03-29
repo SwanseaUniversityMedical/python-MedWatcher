@@ -80,7 +80,7 @@ class DefaultWatcher(DefaultDirWatcher):
 
 class PythonWatcher(DefaultDirWatcher):
     def should_watch_file(self, entry):
-        return entry.name == 'entrypoint.py'
+        return entry.name == os.getenv('WATCH_PATTERN', 'medgate_entrypoint.py')
 
 
 class RegExpWatcher(AllWatcher):
